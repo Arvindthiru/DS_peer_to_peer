@@ -1,0 +1,15 @@
+version: '2.1'
+services:
+  message-broker-1:
+    build: 
+      context: Message_broker_1/.
+    #image: new-node-1
+    ports:
+      - "8000:8000"
+
+  message-broker-2:
+    build: 
+      context: Message_broker_2/.
+    #image: node-new-2
+    ports:
+      - "3000:3000"

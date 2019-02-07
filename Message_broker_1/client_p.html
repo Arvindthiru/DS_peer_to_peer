@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h3>Web Interface for Publisher</h3>
+    <p>Enter the Topic</p>
+    Topic: <input type="text" id="topic_string" size="70"><br>
+    <p>Enter the Event</p>
+    Event: <input type="text" id="event_string" size="70"><br>
+    <button id="connectb">Connect</button>
+    <button id="publish">Publish</button>
+    <p id="output"></p>
+    <script>
+        var button1 = document.getElementById("connectb");
+    	var button2 = document.getElementById("publish");
+        var socket;
+        button1.addEventListener("click", function(){
+
+            //socket = io('/publisher');
+            socket = io.connect('http://localhost:8000/publish');
+            document.getElementById("connectb").disabled = true;
+            //console.log(socket);
+        })
+    	button2.addEventListener("click", function(){
+
+    		console.log("The Topic with the specified event is published");
+    		var topic = document.getElementById('topic_string');
+            var event = document.getElementById('event_string');
+    		console.log(topic.value+ event.value);
+            var jdata = {
+            topic_name : topic.value,
+            event_name : event.value
+            }
+            socket.emit('join',jdata);
+            socket.on('messages', function(data){
+
+                console.log(data);
+            });
+
+    	});
+    </script>
+    <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
+  </body>
+</html>

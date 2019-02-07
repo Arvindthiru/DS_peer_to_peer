@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+    </script>
+  <body>
+  	<h3>Web Interface for Subscriber</h3>
+    <p> Enter the Region </p>
+    Region: <input type="text" id="reg" size="70"><br>
+  	<p>Enter the Subscriber no :</p>
+    Number: <input type="text" id="sub_no" size="70"><br>
+  	<p>Connect to Broker</p>
+  	<button id="connectb">Connect</button>
+    <p>Enter the topic to subscribe</p>
+    Topic Name: <input type="text" id="topic_name" size ="70"><br>
+    <button id="subs">Subscribe</button>
+  	<h4>List of topics published</h4>
+    <p id="topic_output">
+    <ul id = "topic_list">
+    </ul>	
+    </p>
+    <h4>Events</h4>
+    <p id="event_topic">
+    <ul id = "event_list">
+    </ul>
+    <script>
+      	
+		var button1 = document.getElementById("connectb");
+    var button2 = document.getElementById("subs");
+    var socket;
+    button1.addEventListener("click", function(){
+      var sub_number = document.getElementById('sub_no');
+      var string = 'loggedsub='+sub_number.value;
+      //console.log(String(string));
+      var region = document.getElementById('reg');
+      if(region.value == 1)
+      {
+        var port = 8000;
+      }
+      else if(region.value == 2)
+      {
+        var port = 3000;
+      }
+      var connect_url = "http://localhost:"+port+'/subscribe';
+      console.log(connect_url);
+      socket = io.connect(connect_url,{query : 'loggedsub='+sub_number.value+'&connect_url='+connect_url});
+      document.getElementById("connectb").disabled = true;
+      socket.on('sub_connect', function(data){
+
+        var list = document.getElementById('topic_list');
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode("Topic: "+data+" is published"));
+        list.appendChild(li);
+          });
+        });
+    button2.addEventListener("click", function(){
+      var topic = document.getElementById("topic_name");
+      var sub_number = document.getElementById("sub_no");
+      var sdata = {
+        topic_name : topic.value,
+        subscriber_no : sub_number.value
+      }
+      socket.emit('SUB',sdata);
+      socket.on('sub_event', function(data){
+        console.log(data);
+        var new_data = JSON.parse(data);
+        var events = String(new_data.events);
+        var topic = new_data.topic_name; 
+        var list = document.getElementById('event_list');
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode("Events published by "+topic+" are: "+ events));
+        list.appendChild(li);
+        document.getElementById("subs").removeEventListener("mousemove", myFunction);
+       
+    });
+    
+  });
+    //socket = io.connect('http://localhost:8000/subscribe');
+    
+
+    </script>
+
+    <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
+  </body>
+</html>
